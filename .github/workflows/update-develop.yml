@@ -1,0 +1,24 @@
+name: Update the develop branch after being merged to main.
+
+on:
+  pull_request:
+    types: [closed]
+    # The target base branch
+    branches: [main, master]
+
+jobs:
+  rebase-currentbranch:
+    runs-on: ubuntu-latest
+    # Runs when the PR is closed by a pull-request.
+    if: github.event.pull_request.merged == true
+    env:
+      # A name of the branch to be merged.
+      HEAD_REF: ${{ github.head_ref }}
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Required to perform merging
+      - run: git switch "$HEAD_REF"
+      - run: git merge @{-1} --ff-only
+      - run: git push origin "$HEAD_REF"
