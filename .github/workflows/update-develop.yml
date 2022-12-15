@@ -1,0 +1,23 @@
+name: Update the develop branch after being merged to main.
+
+on:
+  pull_request:
+    types: [closed]
+    # Target branch
+    branches: [master, main]
+
+jobs:
+  rebase-currentbranch:
+    runs-on: ubuntu-latest
+    # Runs only when the PR is closed.
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: git branch   # Show branches in case of failure on switching branches.
+    # - run: git fetch origin develop
+      - run: git switch develop
+      - run: git merge @{-1} --ff-only
+      - run: git push origin develop
