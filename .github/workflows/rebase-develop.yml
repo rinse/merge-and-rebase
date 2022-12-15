@@ -1,0 +1,22 @@
+name: Rebase a branch on main after being merged to main
+
+on:
+  pull_request:
+    types: [closed]
+    # Target branch
+    branches: [master, main]
+
+jobs:
+  rebase-currentbranch:
+    runs-on: ubuntu-latest
+    # Runs only when the PR is closed.
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+      # - env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     ISSUE_URL: ${{ github.event.issue.html_url }} 
+      #   run: 
+      - run: git branch
+
