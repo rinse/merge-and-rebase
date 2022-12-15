@@ -1,0 +1,29 @@
+name: Update shared branches after being merged to stable branches.
+
+on:
+  pull_request:
+    types: [closed]
+    # The target base branch
+    branches: [main]
+
+jobs:
+  update-develop:
+    runs-on: ubuntu-latest
+    # Runs when the PR is closed by a pull-request.
+    if: github.event.pull_request.merged == true
+    env:
+      # A name of the base branch to which is merged.
+      BASE_REF: ${{ github.base_ref }}
+      # A name of the head branch which is merged.
+      HEAD_REF: ${{ github.head_ref }}
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Required to perform merging
+      - name: Git switch to ${{ github.head_ref }}
+        run: git switch "$HEAD_REF"
+      - name: Git first-forward merge ${{ github.base_ref }} to ${{ github.head_ref }}.
+        run: git merge "$BASE_REF" --ff-only
+      - name: Git push ${{ github.head_ref }} to the repo.
+        run: git push origin "$HEAD_REF"
